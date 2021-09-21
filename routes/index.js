@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const crawlerMethod = require("../util");
+const { base_url } = require("../constants/constant");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -9,16 +10,26 @@ router.get("/", function (req, res, next) {
 
 router.post("/crawling", async (req, res) => {
   const { link } = req.body;
-  try {
-    let data = await crawlerMethod(link);
-    data = data && data.length > 0 ? data : {};
-    res.json({
-      data: data,
-    });
-  } catch (error) {
+  if (link.includes(base_url)) {
+    try {
+      let data = await crawlerMethod(link);
+      data = data && data.length > 0 ? data : {};
+      res.json({
+        data: data,
+        isPageValid: true,
+      });
+    } catch (error) {
+      res.status(400).send({
+        status: "error",
+        data: null,
+        isPageValid: true,
+      });
+    }
+  } else {
     res.status(400).send({
       status: "error",
       data: null,
+      isPageValid: false,
     });
   }
 });
