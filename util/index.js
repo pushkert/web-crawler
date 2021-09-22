@@ -24,7 +24,19 @@ async function crawlerMethod(link) {
     });
 
     await browser.close();
-    return data;
+    let res =
+      data !== null
+        ? data.reduce((acc, current) => {
+            const x = acc.find((item) => item.reviewer === current.reviewer);
+            if (!x) {
+              return acc.concat([current]);
+            } else {
+              return acc;
+            }
+          }, [])
+        : data;
+    console.log(res);
+    return res;
   } catch (error) {
     console.error(error);
   }
